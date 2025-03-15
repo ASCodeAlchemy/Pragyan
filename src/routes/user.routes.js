@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, registerUser, logoutUser, changePassword } from "../controller/user.controller.js";
+import { loginUser, registerUser, logoutUser, changePassword, getCurrentUser } from "../controller/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
@@ -41,6 +41,8 @@ router.route('/changepassword').post(
             res.status(500).send("Error changing password");
         }
     }
-);
+) 
+
+router.route('/getuser').post(verifyJWT, getCurrentUser)
 
 export default router;
