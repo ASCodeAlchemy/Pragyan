@@ -1,4 +1,4 @@
-import express from 'express';
+
 import userRoutes from './routes/user.routes.js';
 import tripRoutes from './routes/trip.routes.js';
 import { app } from "./app.js";

@@ -24,20 +24,13 @@ const dashSchema = new mongoose.Schema({
         required: true
     },
 
-    exclusiveOffer: { 
-        type: String, 
-       
-    },
-    
+ 
     rewardExpiry: {
         type: Number,
         required: true
     },
 
-    Ratings: { 
-        type: String
-    },
-
+  
     tier: { 
         type: String,
         enum: ["Bronze","Silver","Gold"],

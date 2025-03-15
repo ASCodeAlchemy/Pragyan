@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'; // Add this line
+import jwt from 'jsonwebtoken'; 
 
 const userSchema = new mongoose.Schema({
 
-    avatar: {
-        type: String, 
+    // avatar: {
+    //     type: String, 
 
-     },
+    //  },
      
        username: {
          type: String,
-         required: true
+         required: true,
+         unique: true
        },
        firstname: {
          type: String,
@@ -87,4 +88,5 @@ userSchema.methods.generateRefreshToken= function(){
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
  )
     }
+
 export const User = mongoose.model("User",userSchema)

@@ -20,25 +20,15 @@ const tripSchema = new mongoose.Schema({
         type: Number,
          required: true 
         },
-    co2Reduced: {
-         type: Number, 
-         required: true
-         },
+    // co2Reduced: {
+    //      type: Number, 
+    //      required: true
+    //      },
     rewardPointsEarned: {
          type: Number,
           required: true
          },
-    startLocation:
-     { 
-        type: String, 
-        required: true
-    },
-
-    endLocation: { 
-        type: String,
-        required: true
-    },
-
+    
     startTime: { 
         type: Date,
         required: true

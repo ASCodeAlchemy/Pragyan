@@ -1,4 +1,4 @@
-import mongoose,{Schema} from "mongoose";
+import mongoose from "mongoose";
 
 const profileSchema = new mongoose.Schema({
 
@@ -6,10 +6,10 @@ const profileSchema = new mongoose.Schema({
          type: Number, 
          default: 0
          },
-  totalCO2Reduced: {
-     type: Number, 
-     default: 0 
-    },
+  // totalCO2Reduced: {
+  //    type: Number, 
+  //    default: 0 
+  //   },
   totalRewardsRedeemed: { 
     type: Number, 
     default: 0 
