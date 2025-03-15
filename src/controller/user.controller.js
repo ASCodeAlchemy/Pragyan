@@ -4,6 +4,7 @@ import { User } from '../models/users.models.js';
 import { ApiResponse } from '../utilis/ApiResponse.js';
 import jwt from 'jsonwebtoken'; 
 
+
 const generateAccessAndRefreshTokens = async(userId) => {
     try {
         console.log("Generating tokens for user:", userId);
@@ -94,7 +95,9 @@ const loginUser = asyncHandler(async (req, res) => {
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
         const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+        // user.refreshToken = refreshToken;
 
+        // await user.save();
         const options = {
             httpOnly: true,
             secure: true,
@@ -167,8 +170,49 @@ const getCurrentUser = asyncHandler(async(req,res)=> {
     .json(new ApiResponse(200,req.user, "User Fetched Successfully"))
 })
 
+const accountDetails = asyncHandler(async(req,res)=>{ 
+    const{firstname,lastname,email} = req.body
 
+    if(!firstname || !lastname|| !email){ 
+        throw new ApiError(400,"All Fields are Required")
+    }
 
+    const user = await User.findByIdAndUpdate( 
+        req.user?._id, { 
+            $set :{ 
+                firstname ,
+                lastname, 
+                email :email
+            }
+        },
+        {new : true,
+            writeConcern: {
+                w: "majority",
+              
+        }
+        }
+    ).select("-password")
 
+    return res 
+    .status(200)
+    .json(new ApiResponse(200,user,"Details Updated Successfully"))
+})
 
-export { loginUser, logoutUser , changePassword , getCurrentUser };
+const getUserProfile = asyncHandler(async (req, res) => {
+    try {
+       
+        const userId = req.user._id;
+
+        const user = await User.findById(userId).select("-password -refreshToken -createdAt -updatedAt");
+       
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+export { loginUser, logoutUser , changePassword , getCurrentUser, accountDetails , getUserProfile};
