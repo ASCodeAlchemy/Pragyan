@@ -12,7 +12,7 @@ const tripSchema = new mongoose.Schema({
          },
     endLocation: 
     {
-         type: String, 
+         type: String,  
          required: true 
         },
     kilometers:

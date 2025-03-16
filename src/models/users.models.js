@@ -42,14 +42,14 @@ const userSchema = new mongoose.Schema({
         default : 0
          
          },
-       
+        
     refreshToken : { 
         type : String,
         default: null
       },
 
      
-
+ 
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 
