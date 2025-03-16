@@ -1,5 +1,6 @@
 import { User } from '../models/users.models.js';
 import { Trip } from '../models/trip.models.js';
+import { updateStats } from './stats.controller.js';
 
 
 const createTrip = async (req, res) => {
@@ -30,6 +31,7 @@ const createTrip = async (req, res) => {
         user.TripPoints += tripPoints;
 
         await user.save();
+        await updateStats();
 
         return res.status(201).json({ message: 'Trip recorded successfully', trip });
     } catch (error) {
@@ -37,6 +39,8 @@ const createTrip = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 };
+
+
 
 
 export { createTrip };

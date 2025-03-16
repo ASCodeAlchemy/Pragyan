@@ -8,6 +8,8 @@ router.route('/create').post(
     verifyJWT, createTrip
 )
 
+
+
 export default router;
 
    
