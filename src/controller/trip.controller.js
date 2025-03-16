@@ -1,6 +1,8 @@
 import { User } from '../models/users.models.js';
 import { Trip } from '../models/trip.models.js';
 import { updateStats } from './stats.controller.js';
+import { ApiError } from '../utilis/ApiError.js';
+import { ApiResponse } from '../utilis/ApiResponse.js';
 
 
 const createTrip = async (req, res) => {
@@ -40,9 +42,22 @@ const createTrip = async (req, res) => {
     }
 };
 
+const myTrips = async (req, res) => {
+    try {
+        const userId = req.user._id;
 
+        const trips = await Trip.find({ userId });
 
+        if (!trips || trips.length === 0) {
+            return res.status(404).json({ message: "Trips not found" });
+        }
 
-export { createTrip };
+        return res.status(200).json(trips);
+    } catch (error) {
+        console.log("Error Fetching Trip Details", error);
+        return res.status(500).json({ message: "Server Error" });
+    }
+}
 
-  
+export { createTrip, myTrips };
+

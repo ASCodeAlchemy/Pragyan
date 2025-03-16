@@ -21,7 +21,7 @@ import tripRouter from './routes/trip.routes.js'
 import LandingRouter from './routes/landing.routes.js'
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/trips", tripRouter)
+app.use("/api/v1/users/trips", tripRouter)
 app.use("/api/v1/", LandingRouter)
 
 export { app }; 

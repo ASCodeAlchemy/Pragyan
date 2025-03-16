@@ -22,7 +22,21 @@ const generateAccessAndRefreshTokens = async(userId) => {
     }
 }
 
-export const registerUser = async (req, res, next) => {
+const registerUser = async (userData) => {
+    const user = new User(userData);
+    await user.save();
+    return user;
+};
+
+const loginUser = async (loginData) => {
+    const user = await User.findOne({ email: loginData.email });
+    if (!user || !user.comparePassword(loginData.password)) {
+        throw new Error('Invalid credentials');
+    }
+    return user;
+};
+
+ const registerUserHandler = async (req, res, next) => {
     try {
         const { username, firstname, lastname, email, password} = req.body;
 
@@ -37,18 +51,14 @@ export const registerUser = async (req, res, next) => {
         if (existingUser) {
             throw new ApiError(400, "User Already Exists");
         }
-        // const avatarLocalPath = req.files?.avatar[0]?.path;
-
-        // const avatar = await uploadOnCloud(avatarLocalPath)
 
         try {
-            const user = await User.create({
+            const user = await registerUser({
                 username,
                 firstname,
                 lastname,
                 email,
                 password,
-                // avatar : avatar.url
             });
 
             const createdUser = await User.findById(user._id).select("-password -refreshToken");
@@ -69,7 +79,7 @@ export const registerUser = async (req, res, next) => {
     }
 };
 
-const loginUser = asyncHandler(async (req, res) => {
+const loginUserHandler = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
     if (!username && !email) {
@@ -95,9 +105,7 @@ const loginUser = asyncHandler(async (req, res) => {
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
         const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-        // user.refreshToken = refreshToken;
 
-        // await user.save();
         const options = {
             httpOnly: true,
             secure: true,
@@ -215,5 +223,4 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-export { loginUser, logoutUser , changePassword , getCurrentUser, accountDetails , getUserProfile};
-   
+export { loginUserHandler, logoutUser, changePassword, getCurrentUser, accountDetails, getUserProfile, registerUserHandler, loginUser };
