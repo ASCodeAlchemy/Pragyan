@@ -15,39 +15,21 @@ const tripSchema = new mongoose.Schema({
          type: String, 
          required: true 
         },
-    distance:
+    kilometers:
      { 
         type: Number,
          required: true 
         },
-    // co2Reduced: {
-    //      type: Number, 
-    //      required: true
-    //      },
-    rewardPointsEarned: {
-         type: Number,
-          required: true
-         },
-    
-    startTime: { 
-        type: Date,
-        required: true
-    }, 
-
-    endTime: { 
-        type: Date , 
-        required: true
-    },
 
     tripPoints: {
         type: Number, 
-        required: true
+        default : 0
      },
-     
 
-     
-
-
+     Date : { 
+        type : Date, 
+        default : Date.now()
+     }
 },{timestamps: true})
 
 export const Trip = mongoose.model("Trip",tripSchema)

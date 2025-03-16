@@ -1,26 +1,42 @@
-import { asyncHandler } from '../utilis/asyncHandler.js';
-import { ApiError } from '../utilis/ApiError.js';
 import { User } from '../models/users.models.js';
-import { ApiResponse } from '../utilis/ApiResponse.js';
+import { Trip } from '../models/trip.models.js';
 
-export const recordTrip = asyncHandler(async (req, res) => {
-    const { qrCodeData } = req.body;
 
-    if (!qrCodeData) {
-        throw new ApiError(400, "Trip details are required");
+const createTrip = async (req, res) => {
+    try {
+        const { startLocation, endLocation, kilometers } = req.body;
+        const userId = req.user.id;
+
+       
+        const tripPoints = Math.floor(kilometers / 2);
+
+        
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.totalTrips += 1;
+
+       
+        const trip = new Trip({
+            userId,
+            startLocation,
+            endLocation,
+            kilometers,
+            tripPoints
+        });
+
+        await trip.save();
+
+        user.TripPoints += tripPoints;
+
+        await user.save();
+
+        return res.status(201).json({ message: 'Trip recorded successfully', trip });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error' });
     }
+};
 
-    const userId = req.user._id;
 
-    const user = await User.findById(userId);
-
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-
-    user.trips.push({ qrCodeData });
-
-    await user.save();
-
-    return res.status(200).json(new ApiResponse(200, user, "Trip recorded successfully"));
-});
+export { createTrip };

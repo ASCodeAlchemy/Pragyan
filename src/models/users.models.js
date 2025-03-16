@@ -37,9 +37,10 @@ const userSchema = new mongoose.Schema({
         default: 0
         },
 
-        totalReward: {
-          type: Number,
-          default: 0
+       TripPoints : {
+         type: Number,
+        default : 0
+         
          },
        
     refreshToken : { 
@@ -47,7 +48,7 @@ const userSchema = new mongoose.Schema({
         default: null
       },
 
-      trips: [{ type: Object }]
+     
 
 },{timestamps: true})
 

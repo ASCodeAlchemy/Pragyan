@@ -24,6 +24,7 @@ router.route('/register').post(
     }
 );
 
+
 // Secure Routes
 
 router.route('/login').post((req, res, next) => {
