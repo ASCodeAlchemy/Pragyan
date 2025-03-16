@@ -40,3 +40,5 @@ const createTrip = async (req, res) => {
 
 
 export { createTrip };
+
+  

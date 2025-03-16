@@ -22,3 +22,5 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/trips", tripRouter)
 
 export { app }; 
+
+   
