@@ -6,7 +6,6 @@ import { adminMiddleware } from "../middlewares/admin.middleware.js";
 const router = Router();
 
 router.route('/myrewards').get(verifyJWT, getUserRewards);
-router.route('/add').post(verifyJWT,adminMiddleware,addReward)
-router.route('/all').get(getAllRewards)
+
 
 export default router
