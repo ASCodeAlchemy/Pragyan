@@ -1,55 +1,62 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
+
+const LEAGUES = [
+  'Bronze_I', 'Bronze_II', 'Bronze_III', 
+  'Silver_I', 'Silver_II', 'Silver_III', 
+  'Gold_I', 'Gold_II', 'Gold_III'
+];
+
+
+const rewardSchema = new mongoose.Schema({
+    rewardName: { type: String, required: true },
+    rewardDescription: { type: String },
+    rewardValue: { type: Number, required: true }
+});
 
 const userSchema = new mongoose.Schema({
-
-    // avatar: {
-    //     type: String, 
-
-    //  },
-     
-       username: {
-         type: String,
-         required: true,
-         unique: true
-       },
-       firstname: {
-         type: String,
-         required: true
-       },
-       lastname: {
-         type: String,
-         required: true
-       },
-       email: {
-         type: String,
-         required: true,
-         unique: true 
-       },
-       password: {
-         type: String,
-         required: true
-       },
-
-       totalTrips: {
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    firstname: {
+        type: String,
+        required: true
+    },
+    lastname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true 
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    totalTrips: {
         type: Number,
         default: 0
-        },
+    },
+    TripPoints: {
+        type: Number,
+        default: 0
+    },
+    currentLeague: {
+        type: String,
+        enum: LEAGUES,
+        default: 'Bronze_III'
+    },
+    myRewards: [rewardSchema],
 
-       TripPoints : {
-         type: Number,
-        default : 0
-         
-         },
-        
-    refreshToken : { 
-        type : String,
-        default: null
-      },
-
-     
- 
+    isAdmin: { 
+        type: Boolean,
+        default : false
+     }
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 
@@ -70,15 +77,12 @@ userSchema.methods.generateAccessToken = function(){
             email: this.email,
             username: this.username,
             firstname: this.firstname,
-             
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
-
-    
 }
 
 userSchema.methods.generateRefreshToken= function(){
@@ -88,8 +92,7 @@ userSchema.methods.generateRefreshToken= function(){
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
  )
-    }
+}
 
 export const User = mongoose.model("User",userSchema)
 
- 

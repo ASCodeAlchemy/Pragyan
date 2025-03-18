@@ -1,48 +1,28 @@
 import mongoose from "mongoose";
 
-const dashSchema = new mongoose.Schema({
+const LEAGUES = [
+  'Bronze_I', 'Bronze_II', 'Bronze_III', 
+  'Silver_I', 'Silver_II', 'Silver_III', 
+  'Gold_I', 'Gold_II', 'Gold_III'
+];
 
-    redemtionDate: { 
-        type: Date, 
-        required: true,
-
+const dashboardSchema = new mongoose.Schema({
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
-
     totalTrips: { 
         type: Number,
-        required: true,
-
+        default: 0
     },
-
-    redemedRewards: { 
-        type: Number, 
-        required: true
-    },
-
-    rewardpoints: { 
+    totalPoints: { 
         type: Number,
-        required: true
+        default: 0
     },
-
- 
-    rewardExpiry: {
-        type: Number,
-        required: true
-    },
-
-  
-    tier: { 
+    currentLeague: { 
         type: String,
-        enum: ["Bronze","Silver","Gold"],
-        default: "Bronze"
-    }, 
-
-    tripdetails: { 
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "Trip"
+        enum: LEAGUES
     }
-
-
 })
 
-export const Dashboard = mongoose.model("Dashboard",dashSchema)
+export const Dashboard = mongoose.model("Dashboard",dashboardSchema)
