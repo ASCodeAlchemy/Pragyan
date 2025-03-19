@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const addSchema = new mongoose.Schema({
 
+    rewardId:{ 
+        type:String
+    },
+
     rewardName: { 
         type : String
 

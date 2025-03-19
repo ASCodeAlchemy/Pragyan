@@ -1,22 +1,32 @@
 import { ApiError } from "../utilis/ApiError.js";
-import jwt from 'jsonwebtoken';
-import { User } from '../models/users.models.js';
+import { asyncHandler } from "../utilis/asyncHandler.js";
+import jwt from "jsonwebtoken"
+import { User } from "../models/users.models.js";
 
-export const verifyJWT = async (req, res, next) => {
-    const token = req.cookies.accessToken;
-
-    if (!token) {
-        throw new ApiError(401, "Access token is required");
-    }
-
+ const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        req.user = await User.findById(decoded._id).select('-password -refreshToken');
-        if (!req.user) {
-            throw new ApiError(401, "User not found");
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        
+        // console.log(token);
+        if (!token) {
+            throw new ApiError(401, "Unauthorized request")
         }
-        next();
+    
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+    
+        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+    
+        if (!user) {
+            
+            throw new ApiError(401, "Invalid Access Token")
+        }
+    
+        req.user = user;
+        next()
     } catch (error) {
-        throw new ApiError(401, "Invalid token");
+        throw new ApiError(401, error?.message || "Invalid access token")
     }
-};
+    
+})
+
+export {verifyJWT}

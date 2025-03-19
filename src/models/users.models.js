@@ -56,7 +56,11 @@ const userSchema = new mongoose.Schema({
     isAdmin: { 
         type: Boolean,
         default : false
-     }
+     },
+
+     claimedRewardToken: { 
+        type: String, 
+        default: null },
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 

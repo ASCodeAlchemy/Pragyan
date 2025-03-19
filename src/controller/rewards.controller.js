@@ -1,6 +1,7 @@
 import { User } from "../models/users.models.js";
-import { Reward } from "../models/rewards.models.js";
 import { AddReward } from "../models/addRewards.models.js";
+import { ApiError } from "../utilis/ApiError.js";
+
 
 const getUserRewards = async (req, res) => {
     try {
@@ -82,4 +83,66 @@ const deleteReward = async (req, res) => {
     }
 };
 
-export { getUserRewards, getAllRewards, addReward, deleteReward }
+const generateRandomToken = () => {
+    return Math.floor(1000 + Math.random() * 9000); 
+};
+
+const claimReward = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        //
+        const reward = await AddReward.findOne();
+        if (!reward) {
+            return res.status(404).json({ message: 'No rewards available' });
+        }
+
+        const rewardId = reward._id;
+
+       
+        const token = generateRandomToken();
+
+      
+        user.claimedRewardToken = token;
+        await user.save();
+
+        res.status(200).json({
+            message: 'Reward claimed! Please verify token.',
+            token
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const verifyReward = async (req, res, next) => {
+    try {
+        const { rewardId } = req.body; 
+
+        console.log("Reward ID from request:", rewardId);
+
+        if (!rewardId) {
+            return res.status(400).json(new ApiError(400, "Reward ID is required"));
+        }
+
+        const reward = await AddReward.findById(rewardId); 
+
+        if (!reward) {
+            return res.status(404).json(new ApiError(404, "Reward not found"));
+        }
+
+        req.reward = reward; 
+        next();
+    } catch (error) {
+        console.error("Error verifying reward:", error);
+        return res.status(500).json(new ApiError(500, "Server error"));
+    }
+};
+
+export { getUserRewards, getAllRewards, addReward, deleteReward ,claimReward ,verifyReward}
