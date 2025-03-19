@@ -58,9 +58,9 @@ const userSchema = new mongoose.Schema({
         default : false
      },
 
-     claimedRewardToken: { 
+     rewardClaimed: { 
         type: String, 
-        default: null },
+        default: 0 },
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 
