@@ -91,13 +91,13 @@ const claimReward = async (req, res) => {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        // ✅ Find the user
+  
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // ✅ Find the reward
+       
         const reward = await AddReward.findOne({ leagueRequirement: user.currentLeague });
         if (!reward) {
             return res.status(404).json({ message: 'No rewards available for your current league' });
@@ -105,12 +105,12 @@ const claimReward = async (req, res) => {
 
         const rewardId = reward._id;
 
-        // ✅ Ensure user.rewards is defined
+       
         if (!user.rewards) {
             user.rewards = [];
         }
 
-        // ✅ Check if the reward is already claimed
+      
         const alreadyClaimed = user.rewards.some(
             (r) => r.rewardId.toString() === rewardId.toString()
         );
@@ -128,10 +128,10 @@ const claimReward = async (req, res) => {
             });
         }
 
-        // ✅ Generate token
+    
         const token = generateRandomToken();
 
-        // ✅ Save the claimed reward in the user schema
+      
         user.rewards.push({
             rewardId: reward._id,
             rewardName: reward.rewardName,
@@ -140,10 +140,10 @@ const claimReward = async (req, res) => {
             token
         });
 
-        user.rewardsClaimed += 1;
+        user.rewardClaimed += 1;
         await user.save();
 
-        // ✅ Remove the claimed reward from AddReward collection
+     
         await AddReward.findByIdAndDelete(rewardId);
 
         res.status(200).json({
