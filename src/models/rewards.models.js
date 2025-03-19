@@ -12,18 +12,7 @@ const rewardSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    rewardName: {
-        type: String,
-        required: true
-    },
-    rewardDescription: {
-        type: String,
-        required: true
-    },
-    rewardValue: {
-        type: Number,
-        required: true
-    },
+    
   
 },{timestamps: true})
 
