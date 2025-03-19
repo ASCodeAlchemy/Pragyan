@@ -131,7 +131,7 @@ const claimReward = async (req, res) => {
         // ✅ Generate token
         const token = generateRandomToken();
 
-        // ✅ Save the claimed reward in the user schema
+       
         user.rewards.push({
             rewardId: reward._id,
             rewardName: reward.rewardName,
@@ -140,7 +140,7 @@ const claimReward = async (req, res) => {
             token
         });
 
-        user.rewardsClaimed += 1;
+        user.rewardClaimed += 1;
         await user.save();
 
         // ✅ Remove the claimed reward from AddReward collection
