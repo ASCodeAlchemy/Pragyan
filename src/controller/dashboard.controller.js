@@ -1,6 +1,6 @@
 import { User } from "../models/users.models.js";
+import { AddReward } from "../models/addRewards.models.js"; // Import AddReward model
 import { setLeague } from '../utilis/league.js';
-import { getRewardsByLeague } from '../utilis/rewards.js';
 
 const dashboard = async (req, res) => {
     try {
@@ -17,7 +17,7 @@ const dashboard = async (req, res) => {
             await user.save();
         }
 
-        const rewards = getRewardsByLeague(user.currentLeague);
+        const rewards = await AddReward.find({ leagueRequirement: user.currentLeague }); // Fetch rewards based on current league
 
         return res.status(200).json({
             name: user.name,

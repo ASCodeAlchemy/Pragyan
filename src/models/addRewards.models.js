@@ -15,10 +15,11 @@ const addSchema = new mongoose.Schema({
 
     },
     leagueRequirement:{ 
-        type : String
-
-
+        type : String,
+        index: true // Add index for faster querying
     }
+
+    
 })
 
 export const AddReward= mongoose.model("AddReward",addSchema)
