@@ -140,7 +140,7 @@ const claimReward = async (req, res) => {
             token
         });
 
-        user.rewardClaimed += 1;
+        user.rewardClaimed ++;
         await user.save();
 
      
@@ -162,28 +162,5 @@ const claimReward = async (req, res) => {
     }
 };
 
-const verifyReward = async (req, res, next) => {
-    try {
-        const { rewardId } = req.body;
 
-        console.log("Reward ID from request:", rewardId);
-
-        if (!rewardId) {
-            return res.status(400).json(new ApiError(400, "Reward ID is required"));
-        }
-
-        const reward = await AddReward.findById(rewardId);
-
-        if (!reward) {
-            return res.status(404).json(new ApiError(404, "Reward not found"));
-        }
-
-        req.reward = reward;
-        next();
-    } catch (error) {
-        console.error("Error verifying reward:", error);
-        return res.status(500).json(new ApiError(500, "Server error"));
-    }
-};
-
-export { getUserRewards, getAllRewards, addReward, deleteReward, claimReward, verifyReward };
+export { getUserRewards, getAllRewards, addReward, deleteReward, claimReward };
