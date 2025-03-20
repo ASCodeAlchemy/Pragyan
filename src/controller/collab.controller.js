@@ -41,7 +41,7 @@ const registerCollaborator = async (req, res) => {
     
 };
 
-// Login Collaborator
+
 const loginCollaborator = async (req, res) => {
     try {
         const { email, password } = req.body;

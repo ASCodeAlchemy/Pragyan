@@ -19,7 +19,7 @@ const promoteToAdmin = async (req, res) => {
     }
 };
 
-// ➡️ Demote a user from admin
+
 const demoteFromAdmin = async (req, res) => {
     try {
         const { userId } = req.body;

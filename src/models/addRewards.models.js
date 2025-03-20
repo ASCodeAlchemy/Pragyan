@@ -20,7 +20,7 @@ const addSchema = new mongoose.Schema({
     },
     leagueRequirement:{ 
         type : String,
-        index: true // Add index for faster querying
+        index: true 
     }
 
     
