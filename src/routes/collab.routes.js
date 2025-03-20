@@ -14,3 +14,4 @@ router.route('/claim').post(verifyJWT, claimReward, (req, res) => {
 });
 
 export default router;
+    
