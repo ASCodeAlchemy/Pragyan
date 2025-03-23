@@ -27,11 +27,15 @@ import collabRouter from './routes/collab.routes.js'
 
 
 
+
+
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/users/trips", tripRouter)
 app.use("/api/v1/", LandingRouter)
 app.use("/api/v1/users/",rewardRouter)
 app.use("/api/v1/collab",collabRouter)
+
+
 
 
 

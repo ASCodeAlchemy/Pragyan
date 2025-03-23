@@ -9,22 +9,17 @@ const createTrip = async (req, res) => {
         const { startLocation, endLocation, kilometers } = req.body;
         const userId = req.user.id;
 
-    
         const tripPoints = Math.floor(kilometers / 2);
 
-        
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        
         user.totalTrips += 1;
         user.TripPoints += tripPoints;
-
-        
+        user.lastTripPoints = tripPoints; 
         user.totalKM += kilometers;
         user.totalCO2Reduced = user.totalKM * 0.2;
 
-        
         const trip = new Trip({
             userId,
             startLocation,
@@ -32,17 +27,14 @@ const createTrip = async (req, res) => {
             kilometers,
             tripPoints
         });
+
         await trip.save();
-
-        
         await user.save();
-
-        
         await updateStats();
 
         return res.status(201).json({ message: 'Trip recorded successfully', trip });
     } catch (error) {
-        console.error('Error recording trip:', error);
+        console.error(error);
         return res.status(500).json({ message: 'Server error' });
     }
 };

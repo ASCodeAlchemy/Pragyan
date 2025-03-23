@@ -12,23 +12,19 @@ const dashboard = async (req, res) => {
         }
 
         
-        const updatedLeague = setLeague(user.TripPoints);
-        if (user.currentLeague !== updatedLeague) {
-            user.currentLeague = updatedLeague;
+        const { current, next, min, max } = setLeague(user.TripPoints);
+
+        
+        const progress = ((user.TripPoints - min) / (max - min)) * 100;
+
+        
+        if (user.currentLeague !== current) {
+            user.currentLeague = current;
             await user.save();
         }
 
-        
-        const totalKm = user.totalKM;
-        const totalCO2Reduced = totalKm * 0.2;
-
-        
-        const leaderboard = await User.find({})
-            .sort({ tripPoints: -1 });
-
-        const rank = leaderboard.findIndex(u => u._id.toString() === user._id.toString()) + 1;
-        user.rank = rank;
-        await user.save();
+        const nextMilestone = next ? max : null;
+        const pointsToNextMilestone = next ? nextMilestone - user.TripPoints : 0;
 
         
         const rewards = await AddReward.find({ leagueRequirement: user.currentLeague });
@@ -38,10 +34,14 @@ const dashboard = async (req, res) => {
             email: user.email,
             noOfTrips: user.totalTrips,
             totalTripPoints: user.TripPoints,
-            currentLeague: user.currentLeague,
-            totalCO2Reduced: user.totalCO2Reduced, 
-            rank: user.rank, 
-            rewards: rewards
+            currentLeague: current,
+            nextLeague: next,
+            tierProgress: Math.min(100, Math.max(0, progress)), 
+            nextMilestone,
+            pointsToNextMilestone,
+            totalCO2Reduced: user.totalCO2Reduced,
+            lastTripPoints: user.lastTripPoints,
+            rewards
         });
     } catch (error) {
         console.error('Error fetching user dashboard:', error);

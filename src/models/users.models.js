@@ -8,7 +8,6 @@ const LEAGUES = [
   'Gold_I', 'Gold_II', 'Gold_III'
 ];
 
-
 const rewardSchema = new mongoose.Schema({
     rewardName: { type: String, required: true },
     rewardDescription: { type: String },
@@ -75,7 +74,12 @@ const userSchema = new mongoose.Schema({
         Rank : { 
             type: Number,
             default : 0
-        }
+        },
+
+        lastTripPoints: {
+            type: Number ,
+            default : 0
+        } 
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 
