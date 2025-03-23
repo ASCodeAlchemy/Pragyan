@@ -62,6 +62,16 @@ const userSchema = new mongoose.Schema({
         type: String, 
         default: 0 },
 
+        totalCO2Reduced:{
+            type: Number,
+            default :0
+         },
+
+         totalKM:{
+            type: String,
+            default :0
+          },
+
         Rank : { 
             type: Number,
             default : 0
