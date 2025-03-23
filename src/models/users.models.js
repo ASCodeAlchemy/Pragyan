@@ -61,6 +61,11 @@ const userSchema = new mongoose.Schema({
      rewardClaimed: { 
         type: String, 
         default: 0 },
+
+        Rank : { 
+            type: Number,
+            default : 0
+        }
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 

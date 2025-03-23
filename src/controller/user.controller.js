@@ -206,21 +206,40 @@ const accountDetails = asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200,user,"Details Updated Successfully"))
 })
 
-const getUserProfile = asyncHandler(async (req, res) => {
+const getUserProfile = async (req, res) => {
     try {
-       
-        const userId = req.user._id;
+        const leaderboard = await User.find({})
+            .select('firstname lastname username TripPoints currentLeague')
+            .sort({ TripPoints: -1 });
 
-        const user = await User.findById(userId).select("-password -refreshToken -createdAt -updatedAt");
-       
+        const rankedLeaderboard = leaderboard.map((user, index) => {
+            user.rank = index + 1;
+            return user;
+        });
+
+        const user = rankedLeaderboard.find(user => user._id.toString() === req.user._id.toString());
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        return res.status(200).json(user);
+
+        
+        user.rank = rankedLeaderboard.find(u => u._id.toString() === user._id.toString()).rank;
+
+        res.status(200).json({
+            _id: user._id,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            TripPoints: user.TripPoints,
+            currentLeague: user.currentLeague,
+            rank: user.rank 
+        });
     } catch (error) {
         console.error('Error fetching user profile:', error);
-        return res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Failed to fetch user profile' });
     }
-});
+};
+
 
 export { loginUserHandler, logoutUser, changePassword, getCurrentUser, accountDetails, getUserProfile, registerUserHandler, loginUser };

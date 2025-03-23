@@ -4,18 +4,18 @@ import { User } from "../models/users.models.js";
 const getLeaderboard = async (req, res) => {
     try {
         const leaderboard = await User.find({})
-            .select('name username TripPoints currentLeague')
-            .sort({ TripPoints: -1 }); // Sort by trip points in descending order
+            .select(' username TripPoints currentLeague')
+            .sort({ TripPoints: -1 }); 
 
         const rankedLeaderboard = leaderboard.map((user, index) => ({
             rank: index + 1,
             
             username: user.username,
-            TripPoints: user.TripPoints, // ✅ Added trip points to the response
+            TripPoints: user.TripPoints, 
             currentLeague: user.currentLeague
         }));
 
-        // Send the ranked leaderboard as response
+      
         res.status(200).json(rankedLeaderboard);
     } catch (error) {
         console.error('Error fetching leaderboard:', error);
