@@ -40,7 +40,7 @@ const demoteFromAdmin = async (req, res) => {
     }
 };
 const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await User.find({}, 'username firstname tripPoints currentLeague');
+    const users = await User.find({}, 'username firstname TripPoints currentLeague');
 
     if (!users || users.length === 0) {
         return res.status(404).json({ success: false, message: 'No users found' });
