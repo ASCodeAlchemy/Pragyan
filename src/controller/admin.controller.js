@@ -1,4 +1,5 @@
-import { User } from '../models/user.model.js'; // Fix the import statement
+import { User } from "../models/users.models.js";
+import { asyncHandler } from "../utilis/asyncHandler.js";
 
 const promoteToAdmin = async (req, res) => {
     try {
@@ -38,5 +39,18 @@ const demoteFromAdmin = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 };
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}, 'username firstname tripPoints currentLeague');
 
-export { promoteToAdmin, demoteFromAdmin }
+    if (!users || users.length === 0) {
+        return res.status(404).json({ success: false, message: 'No users found' });
+    }
+
+    res.status(200).json({
+        success: true,
+        data: users,
+        message: 'Users fetched successfully'
+    });
+});
+
+export { promoteToAdmin, demoteFromAdmin ,getAllUsers}

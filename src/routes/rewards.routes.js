@@ -1,16 +1,19 @@
-import { Router } from "express"; 
-import { getAllRewards, getUserRewards, addReward, deleteReward, claimReward } from "../controller/rewards.controller.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { adminMiddleware } from "../middlewares/admin.middleware.js";
+import express from 'express';
+import { authenticateCollaborator } from '../middlewares/authCollab.middleware.js';
+import { verifyRewardToken } from '../middlewares/verify.middleware.js';
+import { claimReward  ,getAllRewards ,getUserRewards,addReward,deleteReward} from '../controller/rewards.controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
+import { adminMiddleware } from '../middlewares/admin.middleware.js';
+import { getAllUsers } from '../controller/admin.controller.js';
+const router = express.Router();
 
+// ✅ Route for collaborator login (protected)
+router.post('/collaborator/login', authenticateCollaborator, (req, res) => {
+    res.status(200).json({ message: 'Collaborator authenticated' });
+});
 
-const router = Router();
-
-router.route('/claim').post(verifyJWT,claimReward)
-router.route('/myrewards').get(verifyJWT, getUserRewards);
+// ✅ Route for reward claiming (protected using reward token)
+router.post('/claim', verifyJWT, claimReward);
 router.route('/add').post(verifyJWT,adminMiddleware,addReward)
-router.route('/all').get(getAllRewards)
-router.route('/delete').delete(verifyJWT,adminMiddleware,deleteReward)
-
-
-export default router
+router.route('/getusers').get(verifyJWT,adminMiddleware,getAllUsers)
+export default router;
