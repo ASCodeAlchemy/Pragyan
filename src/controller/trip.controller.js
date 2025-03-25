@@ -2,8 +2,6 @@ import { User } from '../models/users.models.js';
 import { Trip } from '../models/trip.models.js';
 import { updateStats } from './stats.controller.js';
 
-
-
 const createTrip = async (req, res) => {
     try {
         const { startLocation, endLocation, kilometers } = req.body;

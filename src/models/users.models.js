@@ -71,6 +71,12 @@ const userSchema = new mongoose.Schema({
             default :0
           },
 
+          role: {
+            type: String,
+            enum: ['user', 'collaborator', 'admin'],
+            default: 'user',
+        },
+
         Rank : { 
             type: Number,
             default : 0
@@ -79,7 +85,13 @@ const userSchema = new mongoose.Schema({
         lastTripPoints: {
             type: Number ,
             default : 0
-        } 
+        } ,
+
+      
+        lastClaimedToken: { // Add this field
+            type: Number,
+            default: null
+        }
 },{timestamps: true})
 
 userSchema.pre("save",async function(next){ 

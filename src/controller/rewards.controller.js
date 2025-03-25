@@ -79,72 +79,56 @@ const deleteReward = async (req, res) => {
     }
 };
 
-const generateRandomToken = () => {
+const generateRandomOTP = () => {
     return Math.floor(1000 + Math.random() * 9000);
 };
 
 const claimReward = async (req, res) => {
     try {
-        const userId = req.user.id;
-
+        const userId = req.user._id; 
+        
         if (!userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-  
+        
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-       
+        // ✅ Find reward based on user league
         const reward = await AddReward.findOne({ leagueRequirement: user.currentLeague });
         if (!reward) {
             return res.status(404).json({ message: 'No rewards available for your current league' });
         }
 
-        const rewardId = reward._id;
-
-       
-        if (!user.rewards) {
-            user.rewards = [];
-        }
-
-      
-        const alreadyClaimed = user.rewards.some(
-            (r) => r.rewardId.toString() === rewardId.toString()
-        );
-
-        if (alreadyClaimed) {
+        
+        if (reward.lastClaimedToken) {
             return res.status(400).json({
                 message: 'Reward already claimed',
                 reward: {
                     rewardId: reward._id,
                     rewardName: reward.rewardName,
                     rewardDescription: reward.rewardDescription,
-                    claimedAt: user.rewards.find(r => r.rewardId.toString() === rewardId.toString())?.claimedAt,
-                    token: user.rewards.find(r => r.rewardId.toString() === rewardId.toString())?.token
+                    claimedAt: reward.claimedAt,
+                    OTP: reward.lastClaimedToken
                 }
             });
         }
 
-    
-        const token = generateRandomToken();
+        
+        const OTP = generateRandomOTP();
 
-       
-        user.rewards.push({
-            rewardId: reward._id,
-            rewardName: reward.rewardName,
-            rewardDescription: reward.rewardDescription,
-            claimedAt: new Date(),
-            token
-        });
+        
+        reward.lastClaimedToken = OTP;
+        reward.claimedAt = new Date();
+        await reward.save();
 
-        user.rewardClaimed ++;
+        
+        user.lastClaimedToken = OTP;
+        user.rewardClaimed += 1;
         await user.save();
-
-     
-        await AddReward.findByIdAndDelete(rewardId);
 
         res.status(200).json({
             message: 'Reward claimed successfully!',
@@ -152,8 +136,8 @@ const claimReward = async (req, res) => {
                 rewardId: reward._id,
                 rewardName: reward.rewardName,
                 rewardDescription: reward.rewardDescription,
-                claimedAt: new Date(),
-                token
+                claimedAt: reward.claimedAt,
+                OTP
             }
         });
     } catch (error) {
@@ -161,6 +145,5 @@ const claimReward = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 
 export { getUserRewards, getAllRewards, addReward, deleteReward, claimReward };

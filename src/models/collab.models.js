@@ -1,27 +1,65 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const collabSchema = new mongoose.Schema({
-    name: { 
+const collaboratorSchema = new mongoose.Schema({
+    username: {
         type: String,
-        required: true 
+        required: true,
+        unique: true
     },
-    email: { 
-        type: String, 
-        unique: true, 
-        required: true 
+    fullname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true 
+        required: true
     },
-}, { timestamps: true });
+    type: {
+        type: String,
+        enum: ['collaborator'],
+        default: 'collaborator'
+    }
+    
+}, { timestamps: true, collection: 'collaborators' });
 
-collabSchema.pre('save', async function (next) { 
-    if (!this.isModified('password')) return next();
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+// ✅ Hash password before saving
+collaboratorSchema.pre("save", async function(next) {
+    if (!this.isModified("password")) return next();
+
+    this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-export const Collab = mongoose.model("Collab", collabSchema);
+// ✅ Compare password for login
+collaboratorSchema.methods.isPasswordCorrect = async function(password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+// ✅ Generate Access Token with role
+collaboratorSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        { id: this._id, email: this.email, role: this.role },
+        process.env.COLLAB_ACCESS_TOKEN_SECRET, // ✅ Use the correct secret here
+        { expiresIn: process.env.COLLAB_ACCESS_TOKEN_EXPIRY }
+    );
+};
+
+// ✅ Generate Refresh Token
+collaboratorSchema.methods.generateRefreshToken = function() {
+    return jwt.sign(
+        { _id: this._id },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    );
+};
+
+export const Collaborator = mongoose.model("Collaborator", collaboratorSchema);
+
+
