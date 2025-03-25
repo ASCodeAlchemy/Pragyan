@@ -20,13 +20,14 @@ const getUserRewards = async (req, res) => {
 
 const addReward = async (req, res) => {
     try {
-        const { rewardName, rewardDescription, rewardValue, leagueRequirement } = req.body;
+        const { ShopName, rewardName, rewardDescription, rewardValue, leagueRequirement } = req.body;
 
-        if (!rewardName || !rewardDescription || !rewardValue || !leagueRequirement) {
+        if (!rewardName || !rewardDescription || !rewardValue || !leagueRequirement ||!ShopName) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
 
         const newReward = new AddReward({
+            ShopName,
             rewardName,
             rewardDescription,
             rewardValue,
@@ -79,7 +80,7 @@ const claimReward = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // ✅ Find reward based on user league
+        
         const reward = await AddReward.findOne({ leagueRequirement: user.currentLeague });
         if (!reward) {
             return res.status(404).json({ message: 'No rewards available for your current league' });
@@ -128,4 +129,4 @@ const claimReward = async (req, res) => {
     }
 };
 
-export { getUserRewards, getAllRewards, addReward, deleteReward, claimReward };
+export { getUserRewards, getAllRewards, addReward, claimReward };

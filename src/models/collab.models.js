@@ -3,6 +3,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const collaboratorSchema = new mongoose.Schema({
+
+    ShopName: { 
+        type :String, 
+        required: true
+    },
     username: {
         type: String,
         required: true,

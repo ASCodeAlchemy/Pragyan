@@ -21,7 +21,12 @@ const addSchema = new mongoose.Schema({
     leagueRequirement:{ 
         type : String,
         index: true 
-    }
+    },
+
+    ShopName: { 
+        type:String,
+        required: true
+    },
 
     
 })

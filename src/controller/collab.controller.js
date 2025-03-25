@@ -26,9 +26,9 @@ const generateCollaboratorAccessAndRefreshTokens = async (collaborator) => {
 };
 
 const registerCollaborator = async (req, res) => {
-    const { username, email, fullname, password } = req.body;
+    const { ShopName, username, email, fullname, password } = req.body;
 
-    if (!username || !email || !fullname || !password) {
+    if (!username || !email || !fullname || !password ||!ShopName) {
         throw new ApiError(400, "All fields are required");
     }
 
@@ -40,6 +40,7 @@ const registerCollaborator = async (req, res) => {
 
     
     const newCollaborator = new Collaborator({
+        ShopName,
         username,
         email,
         fullname,
@@ -63,14 +64,14 @@ const registerCollaborator = async (req, res) => {
 
 
 const loginCollaborator = asyncHandler(async (req, res) => {
-    const { email, fullname, password } = req.body;
+    const { email, username, password } = req.body;
 
-    if (!fullname && !email) {
-        throw new ApiError(400, "fullname or email is required");
+    if (!username && !email) {
+        throw new ApiError(400, "username or email is required");
     }
 
     const collab = await Collaborator.findOne({
-        $or: [{ fullname }, { email }],
+        $or: [{ username }, { email }],
     });
 
     if (!collab) {
@@ -166,6 +167,17 @@ const verifyReward = asyncHandler(async (req, res) => {
         throw new ApiError(404, 'Reward not found');
     }
 
+    // ✅ Find collaborator
+    const collaborator = await Collaborator.findById(req.collaborator._id);
+    if (!collaborator) {
+        throw new ApiError(404, 'Collaborator not found');
+    }
+
+    // ✅ Check if ShopName matches
+    if (reward.ShopName !== collaborator.ShopName) {
+        throw new ApiError(403, 'ShopName does not match');
+    }
+
     // ✅ Clear last claimed token after verification
     user.lastClaimedToken = null;
     await user.save();
@@ -174,14 +186,9 @@ const verifyReward = asyncHandler(async (req, res) => {
     await AddReward.findByIdAndDelete(rewardId);
 
     // ✅ Update collaborator stats
-    const collaborator = await Collaborator.findById(req.collaborator._id);
-    if (collaborator) {
-        collaborator.rewardsVerified += 1;
-        collaborator.totalUsersVerified += 1;
-        await collaborator.save(); // ✅ Save updated stats
-    } else {
-        throw new ApiError(404, 'Collaborator not found');
-    }
+    collaborator.rewardsVerified += 1;
+    collaborator.totalUsersVerified += 1;
+    await collaborator.save(); // ✅ Save updated stats
 
     res.status(200).json({ message: 'Reward verified successfully!' });
 });
