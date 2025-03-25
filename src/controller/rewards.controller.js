@@ -60,24 +60,6 @@ const getAllRewards = async (req, res) => {
     }
 };
 
-const deleteReward = async (req, res) => {
-    try {
-        const { rewardId } = req.params;
-
-        const reward = await AddReward.findById(rewardId);
-
-        if (!reward) {
-            return res.status(404).json({ message: 'Reward not found' });
-        }
-
-        await reward.remove();
-
-        return res.status(200).json({ message: 'Reward deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting reward:', error);
-        return res.status(500).json({ message: 'Server error' });
-    }
-};
 
 const generateRandomOTP = () => {
     return Math.floor(1000 + Math.random() * 9000);
