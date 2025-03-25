@@ -186,8 +186,8 @@ const verifyReward = asyncHandler(async (req, res) => {
     await AddReward.findByIdAndDelete(rewardId);
 
     // ✅ Update collaborator stats
-    collaborator.rewardsVerified += 1;
-    collaborator.totalUsersVerified += 1;
+    collaborator.rewardsVerified ++;
+    collaborator.totalUsersVerified ++;
     await collaborator.save(); // ✅ Save updated stats
 
     res.status(200).json({ message: 'Reward verified successfully!' });

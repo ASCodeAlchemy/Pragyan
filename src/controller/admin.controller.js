@@ -55,7 +55,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 const getAllCollab = asyncHandler(async(req,res)=>{ 
-    const collabs = await Collaborator.find({}, 'username , fullname, email')
+    const collabs = await Collaborator.find({}, 'ShopName , username , email, status')
 
     if(!collabs || collabs.length ===0){ 
         return res.status(404).json({sucess:false, message :'no collaborator found'})
