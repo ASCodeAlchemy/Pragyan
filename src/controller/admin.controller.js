@@ -1,5 +1,6 @@
 import { User } from "../models/users.models.js";
 import { asyncHandler } from "../utilis/asyncHandler.js";
+import { Collaborator } from "../models/collab.models.js";
 
 const promoteToAdmin = async (req, res) => {
     try {
@@ -53,4 +54,19 @@ const getAllUsers = asyncHandler(async (req, res) => {
     });
 });
 
-export { promoteToAdmin, demoteFromAdmin ,getAllUsers}
+const getAllCollab = asyncHandler(async(req,res)=>{ 
+    const collabs = await Collaborator.find({}, 'username , fullname, email')
+
+    if(!collabs || collabs.length ===0){ 
+        return res.status(404).json({sucess:false, message :'no collaborator found'})
+
+    }
+
+    res.status(200).json({
+        sucess: true, 
+        data: collabs,
+        message: 'Collaborators fetched successfully'
+    })
+})
+
+export { promoteToAdmin, demoteFromAdmin ,getAllUsers,getAllCollab}
