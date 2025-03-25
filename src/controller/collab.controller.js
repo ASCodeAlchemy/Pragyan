@@ -147,32 +147,45 @@ const verifyReward = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Username, Reward ID, and OTP are required');
     }
 
-    
+    // ✅ Find user
     const user = await User.findOne({ username });
     if (!user) {
         throw new ApiError(404, 'User not found');
     }
 
-    
     console.log(`User's last claimed token: ${user.lastClaimedToken}`);
+    
+    // ✅ Validate OTP
     if (user.lastClaimedToken !== OTP) {
         throw new ApiError(401, 'Invalid OTP');
     }
 
+    // ✅ Find reward
     const reward = await AddReward.findById(rewardId);
     if (!reward) {
         throw new ApiError(404, 'Reward not found');
     }
 
-    
+    // ✅ Clear last claimed token after verification
     user.lastClaimedToken = null;
     await user.save();
 
-    
+    // ✅ Delete the reward after verification
     await AddReward.findByIdAndDelete(rewardId);
+
+    // ✅ Update collaborator stats
+    const collaborator = await Collaborator.findById(req.collaborator._id);
+    if (collaborator) {
+        collaborator.rewardsVerified += 1;
+        collaborator.totalUsersVerified += 1;
+        await collaborator.save(); // ✅ Save updated stats
+    } else {
+        throw new ApiError(404, 'Collaborator not found');
+    }
 
     res.status(200).json({ message: 'Reward verified successfully!' });
 });
+
 
 
  const refreshToken = async (req, res) => {
@@ -199,6 +212,69 @@ const verifyReward = asyncHandler(async (req, res) => {
         res.status(401).json({ message: 'Invalid refresh token' });
     }
 };
+const getCollaboratorProfile = asyncHandler(async (req, res) => {
+    const collaborator = await Collaborator.findById(req.collaborator._id).select('-password');
 
+    if (!collaborator) {
+        throw new ApiError(404, 'Collaborator not found');
+    }
 
-export {loginCollaborator ,logoutCollaborator,registerCollaborator,verifyReward ,refreshToken}
+    res.status(200).json(new ApiResponse(200, collaborator, 'Collaborator profile fetched successfully'));
+});
+const updateCollaboratorProfile = asyncHandler(async (req, res) => {
+    const { username, fullname, email, status } = req.body;
+
+    const collaborator = await Collaborator.findById(req.collaborator._id);
+
+    if (!collaborator) {
+        throw new ApiError(404, 'Collaborator not found');
+    }
+
+    
+    if (username) collaborator.username = username;
+    if (fullname) collaborator.fullname = fullname;
+    if (email) collaborator.email = email;
+    if (status) collaborator.status = status;
+
+    await collaborator.save();
+
+    const updatedCollaborator = await Collaborator.findById(req.collaborator._id).select('-password');
+
+    res.status(200).json(new ApiResponse(200, updatedCollaborator, 'Collaborator profile updated successfully'));
+});
+
+const changeCollaboratorPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, 'Old password and new password are required');
+    }
+
+    const collaborator = await Collaborator.findById(req.collaborator._id);
+
+    if (!collaborator) {
+        throw new ApiError(404, 'Collaborator not found');
+    }
+
+    const isPasswordValid = await collaborator.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordValid) {
+        throw new ApiError(401, 'Old password is incorrect');
+    }
+
+    collaborator.password = newPassword;
+    await collaborator.save();
+
+    res.status(200).json(new ApiResponse(200, {}, 'Password changed successfully'));
+});
+
+export { 
+    loginCollaborator, 
+    logoutCollaborator, 
+    registerCollaborator, 
+    verifyReward, 
+    refreshToken, 
+    getCollaboratorProfile, 
+    updateCollaboratorProfile,
+    changeCollaboratorPassword 
+};

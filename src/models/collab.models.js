@@ -25,7 +25,15 @@ const collaboratorSchema = new mongoose.Schema({
         type: String,
         enum: ['collaborator'],
         default: 'collaborator'
-    }
+    },
+    status: { 
+        type: String,
+         enum: ['active', 'inactive'],
+          default: 'active'
+         },
+
+         rewardsVerified: { type: Number, default: 0 },
+         totalUsersVerified: { type: Number, default: 0 },
     
 }, { timestamps: true, collection: 'collaborators' });
 

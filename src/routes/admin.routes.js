@@ -10,7 +10,7 @@ const router = new Router()
 router.route('/promote').post(verifyJWT,adminMiddleware,promoteToAdmin)
 
 
-router.route('/getform').get(verifyJWT,adminMiddleware,getAllForms)
+
 
 
 export default router

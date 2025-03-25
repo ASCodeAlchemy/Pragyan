@@ -1,19 +1,19 @@
 import jwt from 'jsonwebtoken';
-import { Collaborator } from '../models/collab.models.js';// ✅ Import Collaborator model
+import { Collaborator } from '../models/collab.models.js';
 
 const authenticateCollaborator = async (req, res, next) => {
-    let token = req.cookies?.collabAccessToken; // ✅ Read from cookies directly
+    let token = req.cookies?.collabAccessToken; 
 
     if (token) {
         try {
-            // ✅ Use the correct secret
+           
             const decoded = jwt.verify(token, process.env.COLLAB_ACCESS_TOKEN_SECRET);
 
-            // ✅ Attach collaborator to request object
+           
             req.collaborator = await Collaborator.findById(decoded.id).select('-password');
 
             if (req.collaborator) {
-                next(); // ✅ Continue to next middleware
+                next(); 
             } else {
                 return res.status(403).json({ message: 'Not authorized as collaborator' });
             }
