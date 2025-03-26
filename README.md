@@ -6,7 +6,7 @@ Tech Stack :
 HTML,CSS,react.js
 
 2) Backend : 
-Node.js , Express.js 
+Node.js , Express.js , JWT
 
 3) Database : 
-Mongo DB 
+Mongo DB , mongoose (ODM)
