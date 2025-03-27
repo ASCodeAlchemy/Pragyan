@@ -69,4 +69,6 @@ const getAllCollab = asyncHandler(async(req,res)=>{
     })
 })
 
+
+
 export { promoteToAdmin, demoteFromAdmin ,getAllUsers,getAllCollab}

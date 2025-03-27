@@ -2,12 +2,12 @@ import { Form } from "../models/form.models.js";
 import { asyncHandler } from "../utilis/asyncHandler.js";
 import { ApiError } from "../utilis/ApiError.js";
 import { Collaborator } from "../models/collab.models.js";
-
+import { ApiResponse } from "../utilis/ApiResponse.js";
 const createForm = asyncHandler(async (req, res) => {
-    const { ShopName , name, description, Address } = req.body;
+    const { ShopName , name, description, Address , RewardValue } = req.body;
 
     
-    if (!name || !description || !ShopName || !Address) {
+    if (!name || !description || !ShopName || !Address||!RewardValue) {
         throw new ApiError(400, "All Fields are required");
     }
 
@@ -26,6 +26,7 @@ const createForm = asyncHandler(async (req, res) => {
         name,
         description,
         Address,
+        RewardValue,
         createdBy: collab._id
     });
 
@@ -43,12 +44,40 @@ const getAllForms = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Unauthorized: Only admins can access this endpoint");
     }
 
-    const forms = await Form.find().populate("createdBy", "username email");
-
-    res.status(200).json({
-        success: true,
-        data: forms
+    const getForms = asyncHandler(async (req, res) => {
+        const forms = await Form.find().populate('submittedBy', 'fullname email');
+        
+        res.status(200).json(new ApiResponse(200, forms, 'Forms fetched successfully'));
     });
+    
 });
 
-export { createForm, getAllForms }
+const approveForm = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const form = await Form.findById(id);
+    if (!form) {
+        throw new ApiError(404, 'Form not found');
+    }
+
+    form.status = 'approved';
+    await form.save();
+
+    res.status(200).json(new ApiResponse(200, form, 'Form approved successfully'));
+});
+
+const rejectForm = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const form = await Form.findById(id);
+    if (!form) {
+        throw new ApiError(404, 'Form not found');
+    }
+
+    form.status = 'rejected';
+    await form.save();
+
+    res.status(200).json(new ApiResponse(200, form, 'Form rejected successfully'));
+});
+
+export { createForm, getAllForms , approveForm ,rejectForm}

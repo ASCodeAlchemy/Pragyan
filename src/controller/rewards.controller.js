@@ -110,7 +110,7 @@ const claimReward = async (req, res) => {
 
         
         user.lastClaimedToken = OTP;
-        user.rewardClaimed += 1;
+        user.rewardClaimed ++;
         await user.save();
 
         res.status(200).json({

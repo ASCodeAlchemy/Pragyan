@@ -21,6 +21,18 @@ const formSchema = new mongoose.Schema({
         required :true
 
     },
+    RewardValue: { 
+        type: Number, 
+        required: true
+    },
+    status: { 
+        type: String , 
+        required: true,
+
+        enum: ["Pending","approved","rejected"],
+        default: "Pending"
+    },
+
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Collaborator',

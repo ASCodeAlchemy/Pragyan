@@ -148,7 +148,7 @@ const verifyReward = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Username, Reward ID, and OTP are required');
     }
 
-    // ✅ Find user
+    
     const user = await User.findOne({ username });
     if (!user) {
         throw new ApiError(404, 'User not found');
@@ -156,39 +156,39 @@ const verifyReward = asyncHandler(async (req, res) => {
 
     console.log(`User's last claimed token: ${user.lastClaimedToken}`);
     
-    // ✅ Validate OTP
+    
     if (user.lastClaimedToken !== OTP) {
         throw new ApiError(401, 'Invalid OTP');
     }
 
-    // ✅ Find reward
+    
     const reward = await AddReward.findById(rewardId);
     if (!reward) {
         throw new ApiError(404, 'Reward not found');
     }
 
-    // ✅ Find collaborator
+    
     const collaborator = await Collaborator.findById(req.collaborator._id);
     if (!collaborator) {
         throw new ApiError(404, 'Collaborator not found');
     }
 
-    // ✅ Check if ShopName matches
+    
     if (reward.ShopName !== collaborator.ShopName) {
         throw new ApiError(403, 'ShopName does not match');
     }
 
-    // ✅ Clear last claimed token after verification
+    
     user.lastClaimedToken = null;
     await user.save();
 
-    // ✅ Delete the reward after verification
+    
     await AddReward.findByIdAndDelete(rewardId);
 
-    // ✅ Update collaborator stats
+    
     collaborator.rewardsVerified ++;
     collaborator.totalUsersVerified ++;
-    await collaborator.save(); // ✅ Save updated stats
+    await collaborator.save(); 
 
     res.status(200).json({ message: 'Reward verified successfully!' });
 });
